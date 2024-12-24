@@ -1,0 +1,110 @@
+/*SPDL Specification for Cross-Chain Authentication Protocol*/
+
+usertype Kbid, res, Ua, Kaid, R, Ub, ACK, cidres; 
+
+protocol AUTH(BNA, C, BNB)
+
+{
+
+role BNA
+
+{
+
+fresh T1:Nonce;
+
+var T2:Nonce; 
+
+fresh T1:Nonce; 
+
+var T4:Nonce;
+
+const CID, Kid: Nonce;
+
+send_1(BNA, C, {(Kbid, res, Ua, Kaid, R, Kid, T1)}sk(BNA));
+
+read_4(C, BNA, {{(CID, cidres, T4)}sk(C)}pk(BNA));
+
+claim_MD1(BNA, Secret, res);
+
+claim_MD2(BNA, Secret, CID);
+
+claim_MD3(BNA, Secret, Kbid);
+
+claim_MD4(BNA, Niagree);
+
+claim_MD5(BNA, Nisynch);
+
+claim_MD6(BNA, Alive);
+
+claim_MD7(BNA, Weakagree);
+
+}
+
+role C
+
+{
+
+fresh T2, T4:Nonce; 
+
+ var T1, T3: Nonce;
+
+const CID, Kid: Nonce;
+
+read_1(BNA, C, {(Kbid, res, Ua, Kaid, R, Kid, T1)}sk(BNA));
+
+send_2(C, BNB, {{(Kbid, Ub, res, Kaid, T2)}sk(C)}pk(BNB));
+
+read_3(BNB, C, {{Kbid, CID, ACK, T3}sk(BNB)}pk(C));
+
+send_4(C, BNA, {{(CID, cidres, T4)}sk(C)}pk(BNA));
+
+claim_B1(C, Secret, Kbid);
+
+claim_B2(C, Secret,Kaid);
+
+claim_B3(C, Secret, CID);
+
+claim_B4(C, Niagree);
+
+claim_B5(C, Nisynch);
+
+claim_B6(C, Alive);
+
+claim_B7(C, Weakagree);
+
+claim_B8(C, Secret, res);
+
+
+
+}
+
+role BNB
+
+{
+
+fresh T3:Nonce;
+
+var T2:Nonce;
+
+const CID: Nonce;
+
+read_2(C, BNB, {{(Kbid, Ub, res, Kaid, T2)}sk(C)}pk(BNB));
+
+send_3(BNB, C, {{Kbid, CID, ACK, T3}sk(BNB)}pk(C));
+
+claim_AS1(BNB, Secret, CID);
+
+claim_AS2(BNB, Secret, res);
+
+claim_AS3(BNB, Niagree);
+
+claim_AS4(BNB, Nisynch);
+
+claim_AS5(BNB, Alive);
+
+//claim_AS6(BNB, Weakagree);
+
+}
+
+}
+
