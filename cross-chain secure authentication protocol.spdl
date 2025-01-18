@@ -1,0 +1,57 @@
+/* SPDL Specification for Cross-Chain Authentication Protocol */
+usertype KBid, res, UA, KAid, R, UB, Policy, UID;
+protocol AUTH(BNA, C, BNB)
+{
+role BNA
+{
+fresh T1:Nonce;
+var T2:Nonce;
+fresh T1:Nonce;
+var T4:Nonce;
+const CID, Krid: Nonce;
+send_1(BNA, C, {(KBid, res, UA, KAid, R, Krid, T1)}sk(BNA));
+read_3(BNB, BNA, {{(CID, T4)}sk(BNB)}pk(BNA));
+claim(BNA, Secret, res);
+claim(BNA, Secret, CID);
+claim(BNA, Secret, KBid);
+claim(BNA, Niagree);
+claim(BNA, Nisynch);
+claim(BNA, Alive);
+claim(BNA, Weakagree);
+claim(BNA,Commit,C,CID,res);
+claim(BNA,Commit,BNB,CID);
+}
+role C
+{
+fresh T2, T4:Nonce;
+var T1, T3: Nonce;
+const CID, Krid: Nonce;
+read_1(BNA, C, {(KBid, res, UA, KAid, R, Krid, T1)}sk(BNA));
+send_2(C, BNB, {{(KBid, UB, res, KAid, T2)}sk(C)}pk(BNB));
+claim(C, Secret, KBid);
+claim(C, Secret,KAid);
+claim(C, Niagree);
+claim(C, Nisynch);
+claim(C, Alive);
+claim(C, Weakagree);
+claim(C, Secret, res);
+claim(C, Commit, BNA, res);
+}
+role BNB
+{
+fresh T4:Nonce;
+var T2:Nonce;
+const CID: Nonce;
+read_2(C, BNB, {{(KBid, UB, res, KAid, T2)}sk(C)}pk(BNB));
+send_3(BNB, BNA, {{(CID, T4)}sk(BNB)}pk(BNA));
+claim(BNB, Secret, CID);
+claim(BNB, Secret, res);
+claim(BNB, Niagree);
+//claim(BNB, Nisynch);
+//claim(BNB, Alive);
+//claim(BNB, Weakagree);
+//claim(BNB, Commit, C, res);
+//claim(BNB, Commit, BNA, CID);
+
+}
+}
